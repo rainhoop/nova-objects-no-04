@@ -4,6 +4,10 @@ An editorial, scroll-led landing page for a fictional eyewear study. It pairs a 
 
 ![NOVA OBJECTS campaign landing page](docs/preview-desktop.png)
 
+<p align="center">
+  <img src="docs/preview-mobile.png" alt="NOVA OBJECTS campaign landing page on mobile" width="280">
+</p>
+
 ## Highlights
 
 - One continuous campaign video mapped directly to scroll position
@@ -26,7 +30,8 @@ Open [`index.html`](index.html) directly in a modern browser. All video and imag
 │   ├── scroll down.mp4              # Scroll-controlled campaign film
 │   └── scroll up.mp4                # Source companion footage
 ├── docs/
-│   └── preview-desktop.png          # Desktop project screenshot
+│   ├── preview-desktop.png          # Desktop project screenshot
+│   └── preview-mobile.png           # Mobile project screenshot
 └── index.html                       # The complete single-page experience
 ```
 
