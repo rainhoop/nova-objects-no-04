@@ -561,9 +561,7 @@
       let progress = 0;
       let targetProgress = 0;
       let desiredVideoTime = 0;
-      let lastScrollDirection = 0;
-      let settleTimer = 0;
-      let isAutoCompleting = false;
+      let scrollStopTimer = 0;
       let lastFrameTime = 0;
       let lastScrollY = window.scrollY;
       let frameRequest = 0;
@@ -690,6 +688,15 @@
         // Scroll controls the exact frame; the clip never free-runs on its own.
         clips.down.video.pause();
       };
+      const stopAtCurrentFrame = () => {
+        window.clearTimeout(scrollStopTimer);
+        scrollStopTimer = 0;
+        // Do not let the easing keep the clip moving after input has ended.
+        // Keeping the rendered position also avoids a last seek to a new frame.
+        targetProgress = progress;
+        desiredVideoTime = targetTimeFor('down', progress);
+        syncVideo();
+      };
       const seekToDesiredTime = () => {
         const clip = clips.down;
         if (!clip.ready || !clip.duration || clip.video.seeking) return;
@@ -731,7 +738,9 @@
         const now = performance.now();
         const elapsed = lastFrameTime ? Math.min(now - lastFrameTime, 48) : 16.67;
         lastFrameTime = now;
-        progress += (targetProgress - progress) * (1 - Math.exp(-elapsed / 92));
+        // A slightly longer catch-up makes the sequence feel like continuous
+        // playback instead of a succession of individual seeks.
+        progress += (targetProgress - progress) * (1 - Math.exp(-elapsed / 220));
         if (Math.abs(targetProgress - progress) < .0003) progress = targetProgress;
         updateFrame(progress);
         const clip = clips.down;
@@ -761,19 +770,11 @@
       };
       const onScroll = () => {
         const nextProgress = clamp((window.scrollY - sectionTop) / sectionTravel, 0, 1);
-        if (nextProgress !== targetProgress) lastScrollDirection = nextProgress > targetProgress ? 1 : -1;
-        if (isAutoCompleting && lastScrollDirection < 0) isAutoCompleting = false;
         targetProgress = nextProgress;
-        window.clearTimeout(settleTimer);
-        if (!reducedMotion.matches && !isAutoCompleting && lastScrollDirection > 0 && targetProgress > .4 && targetProgress < .995) {
-          settleTimer = window.setTimeout(() => {
-            const stoppedProgress = clamp((window.scrollY - sectionTop) / sectionTravel, 0, 1);
-            if (lastScrollDirection <= 0 || stoppedProgress <= .4 || stoppedProgress >= .995) return;
-            isAutoCompleting = true;
-            window.scrollTo({ top: sectionTop + sectionTravel, behavior: 'smooth' });
-            window.setTimeout(() => { isAutoCompleting = false; }, 1200);
-          }, 180);
-        }
+        window.clearTimeout(scrollStopTimer);
+        // Fallback for browsers without the scrollend event. The video stops
+        // as soon as the short gap between wheel events confirms scrolling ended.
+        scrollStopTimer = window.setTimeout(stopAtCurrentFrame, 80);
         scheduleUpdate();
       };
       const loadClip = (clip) => {
@@ -814,6 +815,7 @@
 
       measure();
       window.addEventListener('scroll', onScroll, { passive: true });
+      if ('onscrollend' in window) window.addEventListener('scrollend', stopAtCurrentFrame, { passive: true });
       const onResize = () => {
         measure();
         scheduleUpdate();
@@ -870,9 +872,10 @@
       });
       window.addEventListener('pagehide', () => {
         window.removeEventListener('scroll', onScroll);
+        window.removeEventListener('scrollend', stopAtCurrentFrame);
         window.removeEventListener('resize', onResize);
         window.clearTimeout(directionTimer);
-        window.clearTimeout(settleTimer);
+        window.clearTimeout(scrollStopTimer);
         if (frameRequest) window.cancelAnimationFrame(frameRequest);
         sectionObserver?.disconnect();
         storyObserver?.disconnect();
