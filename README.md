@@ -2,11 +2,9 @@
 
 An editorial, scroll-led landing page for a fictional eyewear study. It pairs a precise typographic layout with a continuous campaign film and a small collection of product objects.
 
-![NOVA OBJECTS campaign landing page](docs/preview-desktop.png)
+**Live site:** [rainhoop.github.io/nova-objects-no-04](https://rainhoop.github.io/nova-objects-no-04/)
 
-<p align="center">
-  <img src="docs/preview-mobile.png" alt="NOVA OBJECTS campaign landing page on mobile" width="280">
-</p>
+![NOVA OBJECTS campaign landing page](docs/preview-desktop.png)
 
 ## Highlights
 
@@ -31,7 +29,6 @@ Open [`index.html`](index.html) directly in a modern browser. All video and imag
 │   └── scroll up.mp4                # Source companion footage
 ├── docs/
 │   ├── preview-desktop.png          # Desktop project screenshot
-│   └── preview-mobile.png           # Mobile project screenshot
 └── index.html                       # The complete single-page experience
 ```
 
