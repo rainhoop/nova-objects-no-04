@@ -1,0 +1,867 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#edf0eb">
+  <meta name="description" content="NOVA OBJECTS presents the frame that changes the way you see after dark.">
+  <title>NO. 04 — NOVA OBJECTS</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap');
+
+    :root {
+      color-scheme: light;
+      --paper: #edf0eb;
+      --ink: #111312;
+      --muted: #777d79;
+      --silver: #b8c0c2;
+      --pink: #d69eac;
+      --blue: #385be8;
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'Manrope', 'Helvetica Neue', sans-serif;
+      --mono: 'DM Mono', monospace;
+      font-family: var(--sans);
+      background: var(--paper);
+      color: var(--ink);
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; min-width: 320px; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a:focus-visible { outline: 2px solid var(--blue); outline-offset: 5px; }
+    ::selection { background: var(--pink); color: var(--ink); }
+    .skip-link {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 20;
+      padding: 10px 13px;
+      transform: translateY(-160%);
+      background: var(--ink);
+      color: var(--paper);
+      font: 10px var(--mono);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      transition: transform .2s ease;
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    .site-header {
+      height: 74px;
+      padding: 0 5.5vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(17, 19, 18, .14);
+      position: relative;
+      z-index: 2;
+    }
+    .wordmark { font-size: 15px; font-weight: 800; letter-spacing: .16em; }
+    .wordmark span { font-family: var(--serif); font-style: italic; font-weight: 600; letter-spacing: 0; }
+    .nav-links { display: flex; gap: clamp(22px, 4vw, 58px); align-items: center; }
+    .nav-links a, .header-edition { font: 10px var(--mono); letter-spacing: .05em; text-transform: uppercase; }
+    .nav-links a { transition: opacity .2s ease; }
+    .nav-links a:hover { opacity: .56; }
+    .header-edition { color: var(--muted); }
+
+    .campaign { position: relative; }
+    .scroll-sequence { height: 480vh; position: relative; }
+    .stage {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      min-height: 540px;
+      overflow: hidden;
+      isolation: isolate;
+      background:
+        radial-gradient(ellipse at 53% 48%, rgba(208, 216, 211, .72), transparent 56%),
+        var(--paper);
+    }
+    .stage::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      opacity: .4;
+      background-image: radial-gradient(rgba(17, 19, 18, .22) .45px, transparent .6px);
+      background-size: 5px 5px;
+      pointer-events: none;
+    }
+    .stage-topline {
+      position: absolute;
+      top: clamp(18px, 2.7vh, 32px);
+      left: 5.5vw;
+      right: 5.5vw;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      z-index: 6;
+    }
+    .hero-title {
+      margin: 0;
+      font-size: clamp(42px, 7vw, 104px);
+      line-height: .78;
+      letter-spacing: -.065em;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .hero-title em {
+      font-family: var(--serif);
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: -.075em;
+    }
+    .hero-note {
+      width: 150px;
+      margin: 6px 1vw 0 0;
+      font-size: 11px;
+      line-height: 1.65;
+      color: #545a56;
+    }
+    .hero-note { position: relative; }
+    .hero-note strong { display: block; margin-bottom: 8px; color: var(--ink); font: 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+    .hero-actions { display: flex; align-items: center; gap: 18px; margin-top: 23px; }
+    .hero-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 7px;
+      border-bottom: 1px solid currentColor;
+      font: 9px var(--mono);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      transition: color .2s ease, gap .2s ease;
+    }
+    .hero-action span { color: var(--blue); font-size: 14px; }
+    .hero-action:hover { color: var(--blue); gap: 17px; }
+    .sequence-index {
+      position: absolute;
+      left: 5.5vw;
+      bottom: 7.5%;
+      z-index: 6;
+      font: 10px var(--mono);
+      color: #505652;
+      letter-spacing: .06em;
+    }
+    .sequence-index span { color: var(--blue); }
+    .frame-shell {
+      --frame-width: 88vw;
+      position: absolute;
+      z-index: 3;
+      top: 56%;
+      left: 50%;
+      width: var(--frame-width);
+      aspect-ratio: 16 / 9;
+      transform: translate(-50%, -50%);
+      overflow: hidden;
+      border-radius: 0;
+      background: #d6dbd7;
+      box-shadow: 0 18px 52px rgba(19, 25, 22, .13);
+      will-change: width, height, top;
+      contain: paint;
+    }
+    .campaign-video {
+      position: absolute;
+      inset: -1px;
+      width: calc(100% + 2px);
+      height: calc(100% + 2px);
+      display: block;
+      opacity: 0;
+      object-fit: cover;
+      object-position: 45% center;
+      background: #d6dbd7;
+      transition: opacity .12s linear;
+      transform: translateZ(0);
+    }
+    .campaign-video.is-active { opacity: 1; }
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .media-status:not(.visually-hidden) {
+      position: absolute;
+      z-index: 4;
+      left: 50%;
+      bottom: 12px;
+      width: max-content;
+      max-width: calc(100% - 24px);
+      padding: 8px 10px;
+      transform: translateX(-50%);
+      background: rgba(17, 19, 18, .84);
+      color: #fff;
+      font: 10px/1.5 var(--mono);
+      text-align: center;
+    }
+    .scroll-cue {
+      position: absolute;
+      right: 5.5vw;
+      bottom: 7%;
+      z-index: 6;
+      display: flex;
+      gap: 13px;
+      align-items: center;
+      font: 9px var(--mono);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .scroll-cue::after { content: ''; width: 48px; height: 1px; background: var(--blue); }
+    .campaign-progress {
+      position: absolute;
+      z-index: 6;
+      right: 5.5vw;
+      top: 50%;
+      width: 1px;
+      height: clamp(70px, 13vh, 126px);
+      overflow: hidden;
+      background: rgba(17, 19, 18, .18);
+    }
+    .campaign-progress span {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: var(--blue);
+      transform: scaleY(0);
+      transform-origin: top;
+      will-change: transform;
+    }
+    .product-reveal {
+      position: absolute;
+      left: 5.5vw;
+      bottom: 8.5%;
+      z-index: 7;
+      width: clamp(150px, 20vw, 285px);
+      margin: 0;
+      opacity: 0;
+      transform: translate3d(0, 28px, 0);
+      pointer-events: none;
+      will-change: opacity, transform;
+    }
+    .product-reveal--right { top: calc(100% + 18px); right: 0; bottom: auto; left: auto; }
+    .product-reveal img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid rgba(17, 19, 18, .13);
+      box-shadow: 0 15px 38px rgba(19, 25, 22, .16);
+    }
+    .product-reveal figcaption {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      margin: 0;
+      padding: 16px 13px 12px;
+      background: linear-gradient(transparent, rgba(17, 19, 18, .7));
+      color: #fff;
+      font: 8px var(--mono);
+      letter-spacing: .08em;
+      text-align: right;
+      text-transform: uppercase;
+    }
+    .product-reveal figcaption strong,
+    .product-reveal figcaption span { display: block; }
+    .product-reveal figcaption strong { margin-bottom: 4px; font-weight: 500; }
+    .product-reveal figcaption span { color: rgba(255, 255, 255, .78); font-size: 7px; }
+    .frame-caption {
+      display: none;
+      position: absolute;
+      z-index: 4;
+      left: 5.5vw;
+      top: 57%;
+      width: 154px;
+      font: 9px/1.7 var(--mono);
+      letter-spacing: .035em;
+      color: #545a56;
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+    .frame-caption strong { display: block; color: var(--ink); font-weight: 500; }
+    .side-mark {
+      position: absolute;
+      right: 5.5vw;
+      top: 69%;
+      z-index: 6;
+      writing-mode: vertical-rl;
+      font: 9px var(--mono);
+      letter-spacing: .13em;
+      color: var(--muted);
+    }
+    .stage-rule { position: absolute; left: 5.5vw; right: 5.5vw; bottom: 5.2%; height: 1px; background: rgba(17,19,18,.16); z-index: 6; }
+
+    .story {
+      padding: clamp(100px, 16vw, 230px) 11vw clamp(100px, 15vw, 200px);
+      display: grid;
+      grid-template-columns: minmax(180px, .78fr) 1.22fr;
+      gap: 9vw;
+      position: relative;
+      background: #f7f8f4;
+    }
+    .story-side { padding-top: 10px; }
+    .eyebrow { font: 10px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--blue); }
+    .story-number { margin-top: 54px; color: var(--silver); font: 13px var(--mono); }
+    .story-product { width: min(100%, 285px); margin: clamp(38px, 6vw, 88px) 0 0; }
+    .story-product img { display: block; width: 100%; height: auto; border: 1px solid rgba(17, 19, 18, .1); box-shadow: 0 16px 40px rgba(19, 25, 22, .09); }
+    .story-product figcaption { margin-top: 10px; color: var(--muted); font: 8px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+    .story-copy h2 { margin: 0 0 30px; max-width: 680px; font-size: clamp(48px, 7.3vw, 106px); line-height: .9; letter-spacing: -.07em; font-weight: 600; }
+    .story-copy h2 em { font-family: var(--serif); font-weight: 600; }
+    .story-description { max-width: 430px; margin: 0; font-size: 15px; line-height: 1.8; color: #535a56; }
+    .spec-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin: 58px 0 53px; padding: 20px 0; border-top: 1px solid #cfd4cf; border-bottom: 1px solid #cfd4cf; }
+    .spec-list dt { margin-bottom: 9px; color: var(--muted); font: 9px var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+    .spec-list dd { margin: 0; font-size: 12px; font-weight: 600; }
+    .explore-link { display: inline-flex; gap: 20px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--ink); font: 11px var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+    .explore-link span { color: var(--blue); font-size: 17px; transition: transform .2s ease; }
+    .explore-link:hover span { transform: translateX(5px); }
+    .explore-link:focus-visible, .hero-action:focus-visible { outline-offset: 8px; }
+
+    .editions {
+      padding: clamp(72px, 10vw, 150px) 5.5vw clamp(92px, 12vw, 165px);
+      background: var(--paper);
+    }
+    .editions-head { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: clamp(30px, 5vw, 68px); }
+    .editions h2 { max-width: 670px; margin: 12px 0 0; font-size: clamp(42px, 6.3vw, 94px); font-weight: 600; letter-spacing: -.07em; line-height: .86; }
+    .editions h2 em { font-family: var(--serif); font-weight: 600; }
+    .editions-count { font: 10px var(--mono); color: var(--muted); letter-spacing: .08em; }
+    .edition-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(12px, 2vw, 28px); }
+    .edition-card { margin: 0; opacity: 1; transform: none; transition: opacity .8s cubic-bezier(.2,.75,.25,1), transform .8s cubic-bezier(.2,.75,.25,1); }
+    .js .edition-card { opacity: 0; transform: translate3d(0, 38px, 0); }
+    .js .edition-card.is-visible { opacity: 1; transform: translate3d(0, 0, 0); }
+    .edition-card:nth-child(2) { transition-delay: .12s; }
+    .edition-card:nth-child(3) { transition-delay: .24s; }
+    .edition-photo { position: relative; overflow: hidden; background: #d9dcda; }
+    .edition-photo img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; transition: transform .7s cubic-bezier(.2,.75,.25,1); }
+    .edition-card:hover .edition-photo img { transform: scale(1.045); }
+    .edition-number { position: absolute; top: 12px; left: 12px; padding: 6px 8px; background: rgba(247, 248, 244, .88); font: 8px var(--mono); letter-spacing: .08em; }
+    .edition-card figcaption { display: flex; justify-content: space-between; gap: 12px; padding-top: 13px; font: 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+    .edition-card figcaption span:last-child { color: var(--muted); }
+
+    .closing {
+      min-height: 370px;
+      padding: 52px 5.5vw 34px;
+      background: #131615;
+      color: var(--paper);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .closing-top { display: flex; justify-content: space-between; gap: 30px; font: 10px var(--mono); color: #b7bfba; text-transform: uppercase; letter-spacing: .08em; }
+    .closing-title { margin: 55px 0 65px; font-size: clamp(54px, 10vw, 145px); line-height: .8; letter-spacing: -.075em; font-weight: 600; }
+    .closing-title em { font-family: var(--serif); font-weight: 600; }
+    .closing-bottom { padding-top: 18px; border-top: 1px solid #414744; display: flex; justify-content: space-between; gap: 20px; color: #a1a8a3; font: 9px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+
+    @media (min-width: 1440px) {
+      .frame-shell { --frame-width: min(88vw, 142vh); }
+      .story { padding-left: max(11vw, calc((100vw - 1150px) / 2)); padding-right: max(11vw, calc((100vw - 1150px) / 2)); }
+    }
+    @media (max-width: 760px) {
+      .site-header { height: 62px; padding: 0 6vw; }
+      .wordmark { font-size: 13px; }
+      .nav-links { gap: 17px; }
+      .nav-links a, .header-edition { font-size: 8px; }
+      .header-edition { display: none; }
+      .stage { min-height: 490px; }
+      .scroll-sequence { height: 460vh; }
+      .stage-topline { left: 6vw; right: 6vw; top: 8%; display: block; }
+      .hero-title { font-size: clamp(47px, 12.6vw, 88px); line-height: .82; }
+      .hero-note { width: 145px; margin: 18px 0 0 auto; font-size: 10px; }
+      .hero-actions { justify-content: flex-end; margin-top: 18px; }
+      .frame-shell { --frame-width: 88vw; top: 57%; }
+      .sequence-index { left: 6vw; bottom: 8%; font-size: 8px; }
+      .scroll-cue { right: 6vw; bottom: 7.8%; font-size: 8px; gap: 7px; }
+      .scroll-cue::after { width: 22px; }
+      .frame-caption { top: auto; bottom: 18%; left: 6vw; width: 110px; font-size: 8px; }
+      .side-mark { top: 57%; right: 5.5vw; font-size: 8px; }
+      .campaign-progress { right: 6vw; top: 49%; height: 60px; }
+      .product-reveal { left: 6vw; bottom: 11%; width: clamp(122px, 34vw, 190px); }
+      .product-reveal--right { top: calc(100% + 14px); right: 0; bottom: auto; left: auto; }
+      .stage-rule { left: 6vw; right: 6vw; bottom: 5%; }
+      .story { padding: 100px 8vw 110px; grid-template-columns: 1fr; gap: 44px; }
+      .story-number { margin-top: 20px; }
+      .story-product { width: min(62vw, 260px); margin-top: 28px; }
+      .story-copy h2 { font-size: clamp(54px, 14vw, 86px); }
+      .story-description { font-size: 14px; }
+      .spec-list { gap: 12px; margin: 42px 0; }
+      .spec-list dd { font-size: 10px; }
+      .editions { padding: 76px 6vw 98px; }
+      .editions-head { align-items: flex-start; }
+      .edition-grid { grid-template-columns: 1fr; gap: 34px; }
+      .edition-card figcaption { font-size: 9px; }
+      .closing { min-height: 320px; padding: 34px 7vw 25px; }
+      .closing-top, .closing-bottom { font-size: 8px; }
+      .closing-title { margin: 70px 0; font-size: clamp(53px, 14vw, 95px); }
+    }
+    @media (max-width: 380px) {
+      .nav-links { gap: 11px; }
+      .nav-links a { font-size: 7px; }
+      .hero-title { font-size: 45px; }
+      .spec-list { grid-template-columns: 1fr 1fr; }
+      .spec-list div:last-child { grid-column: 1 / -1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+      .scroll-sequence { height: auto; }
+      .stage { position: relative; min-height: 100svh; }
+      .frame-shell { width: min(88%, 920px) !important; height: auto !important; aspect-ratio: 4 / 3 !important; top: 58%; }
+      .campaign-video { transition: none; }
+      .frame-caption { display: none; }
+      .scroll-cue { display: none; }
+      .campaign-progress { display: none; }
+      .product-reveal { display: none; }
+      .js .edition-card { opacity: 1; transform: none; }
+    }
+    @media (prefers-contrast: more) {
+      .site-header, .stage-rule { border-color: currentColor; background: currentColor; }
+      .site-header { background: var(--paper); }
+      .story-description, .hero-note, .sequence-index, .frame-caption { color: var(--ink); }
+      .campaign-progress { background: var(--ink); }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#story">Skip campaign film</a>
+  <header class="site-header">
+    <a class="wordmark" href="#top" aria-label="Nova Objects, home">NOVA <span>objects</span></a>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="#collection">Collection</a>
+      <a href="#story">Story</a>
+      <a href="#details">Details</a>
+    </nav>
+    <a class="header-edition" href="#collection">Objects for another point of view&nbsp; ↗</a>
+  </header>
+
+  <main id="top" class="campaign">
+    <section id="collection" class="scroll-sequence" aria-label="No. 04 campaign film">
+      <div class="stage">
+        <div class="stage-topline">
+          <h1 class="hero-title">A softer<br>kind of <em>focus.</em></h1>
+          <div class="hero-note">
+            <strong>Object no. 04</strong>
+            <span>For the hours that ask you to see things differently.</span>
+            <div class="hero-actions"><a class="hero-action" href="#details">View details <span aria-hidden="true">↓</span></a></div>
+            <figure class="product-reveal product-reveal--right" id="product-reveal-right" aria-hidden="true">
+              <img src="assets/glasses3.jpg" alt="">
+              <figcaption><strong>NO. 06 / LAUREL</strong><span>Brushed silver · amber tint</span></figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="frame-shell" id="frame-shell">
+          <video class="campaign-video is-active" id="campaign-video" data-src="assets/scroll%20down.mp4" muted playsinline preload="auto" aria-label="Campaign footage controlled by page scrolling."></video>
+        </div>
+        <p class="visually-hidden media-status" id="media-status" role="status" aria-live="polite">Loading campaign footage.</p>
+        <p class="frame-caption" id="frame-caption"><strong>NO. 04 / AFTERIMAGE</strong>Brushed silver. Rose tint.<br>Made for the in-between.</p>
+        <span class="side-mark" aria-hidden="true">NOVA OBJECTS — EYEWEAR STUDY 04</span>
+        <p class="sequence-index">CAMPAIGN FILM &nbsp; <span>01—04</span> &nbsp; / &nbsp; 2025</p>
+        <div class="campaign-progress" aria-hidden="true"><span id="campaign-progress"></span></div>
+        <figure class="product-reveal" id="product-reveal" aria-hidden="true">
+          <img src="assets/glasses.jpg" alt="">
+          <figcaption><strong>NO. 04 / AFTERIMAGE</strong><span>Brushed silver · rose tint</span></figcaption>
+        </figure>
+        <div class="scroll-cue" aria-hidden="true">Scroll to unfold</div>
+        <div class="stage-rule" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section class="story" id="story">
+      <div class="story-side">
+        <span class="eyebrow">A study in seeing</span>
+        <p class="story-number">N° 04<br>40° 43′ 55.3″ N</p>
+        <figure class="story-product">
+          <img src="assets/glasses.jpg" alt="Afterimage frame with rose-tinted lenses and butterfly details">
+          <figcaption>Object no. 04 / Afterimage</figcaption>
+        </figure>
+      </div>
+      <div class="story-copy" id="details">
+        <h2>Meet the<br><em>Afterimage.</em></h2>
+        <p class="story-description">A little out of focus, entirely in your own. A precise oval lens meets a light-catching frame, finished in a soft rose tint that shifts with the last light of the day.</p>
+        <dl class="spec-list">
+          <div><dt>Silhouette</dt><dd>Soft oval</dd></div>
+          <div><dt>Material</dt><dd>Brushed titanium</dd></div>
+          <div><dt>Lens</dt><dd>Rose / category 2</dd></div>
+        </dl>
+        <a class="explore-link" href="mailto:studio@novaobjects.example?subject=The%20Afterimage%20frame">Explore the frame <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+  </main>
+
+  <section class="editions" aria-labelledby="editions-title">
+    <div class="editions-head">
+      <div>
+        <span class="eyebrow">Other points of view</span>
+        <h2 id="editions-title">Three more ways<br>to <em>look closer.</em></h2>
+      </div>
+      <span class="editions-count">03 OBJECT STUDIES</span>
+    </div>
+    <div class="edition-grid">
+      <figure class="edition-card">
+        <div class="edition-photo"><img src="assets/glasses2.jpg" alt="Pink-lens silver frame with sculpted side detail"><span class="edition-number">OBJECT 05</span></div>
+        <figcaption><span>Rosette</span><span>Rose lens</span></figcaption>
+      </figure>
+      <figure class="edition-card">
+        <div class="edition-photo"><img src="assets/glasses3.jpg" alt="Silver frame with warm brown lenses and leaf detail"><span class="edition-number">OBJECT 06</span></div>
+        <figcaption><span>Laurel</span><span>Amber lens</span></figcaption>
+      </figure>
+      <figure class="edition-card">
+        <div class="edition-photo"><img src="assets/glasses4.jpg" alt="Gold frame with softly tinted lenses and openwork temples"><span class="edition-number">OBJECT 07</span></div>
+        <figcaption><span>Gilded</span><span>Honey lens</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <footer class="closing">
+    <div class="closing-top"><span>Independent optics, considered slowly.</span><span>New York · Everywhere</span></div>
+    <p class="closing-title">Look a little<br><em>closer.</em></p>
+    <div class="closing-bottom"><span>© Nova Objects 2025</span><a href="mailto:studio@novaobjects.example">Write to the studio ↗</a><span>Objects for another point of view</span></div>
+  </footer>
+
+  <script>
+    (() => {
+      document.documentElement.classList.add('js');
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+      document.scrollingElement.scrollTop = 0;
+      const section = document.querySelector('.scroll-sequence');
+      const frame = document.querySelector('#frame-shell');
+      const caption = document.querySelector('#frame-caption');
+      const progressBar = document.querySelector('#campaign-progress');
+      const productReveal = document.querySelector('#product-reveal');
+      const productRevealRight = document.querySelector('#product-reveal-right');
+      const mediaStatus = document.querySelector('#media-status');
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const clips = {
+        down: { video: document.querySelector('#campaign-video'), duration: 0, ready: false, objectUrl: '' }
+      };
+      let activeDirection = 'down';
+      let requestedDirection = 'down';
+      let candidateDirection = 'down';
+      let pendingDirection = '';
+      let activatedDirection = '';
+      let directionTimer = 0;
+      let switchToken = 0;
+      let hasScrollIntent = false;
+      let sectionIsVisible = true;
+      let progress = 0;
+      let targetProgress = 0;
+      let desiredVideoTime = 0;
+      let lastScrollDirection = 0;
+      let settleTimer = 0;
+      let isAutoCompleting = false;
+      let lastFrameTime = 0;
+      let lastScrollY = window.scrollY;
+      let frameRequest = 0;
+      let sectionTop = 0;
+      let sectionTravel = 1;
+      let startWidth = 0;
+      let endWidth = 0;
+      let startTop = 56;
+
+      const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+      const measure = () => {
+        sectionTop = section.getBoundingClientRect().top + window.scrollY;
+        sectionTravel = Math.max(1, section.offsetHeight - window.innerHeight);
+        startWidth = Math.min(window.innerWidth * (window.innerWidth <= 760 ? .62 : .42), 560);
+        endWidth = Math.min(window.innerWidth * .88, window.innerHeight * 1.48);
+        startTop = window.innerWidth <= 760 ? 59 : 58;
+      };
+      const updateFrame = (value) => {
+        const shapeProgress = clamp(value / .82, 0, 1);
+        const eased = shapeProgress * shapeProgress * (3 - 2 * shapeProgress);
+        const width = startWidth + (endWidth - startWidth) * eased;
+        const height = startWidth * 3 / 4 + (endWidth * 9 / 16 - startWidth * 3 / 4) * eased;
+        const top = startTop + (53 - startTop) * eased;
+        frame.style.width = `${width.toFixed(2)}px`;
+        frame.style.height = `${height.toFixed(2)}px`;
+        frame.style.aspectRatio = 'auto';
+        frame.style.top = `${top.toFixed(2)}%`;
+        caption.style.opacity = String(clamp((value - .58) / .28, 0, .9));
+        progressBar.style.transform = `scaleY(${value.toFixed(4)})`;
+        const revealProgress = clamp((value - .7) / .25, 0, 1);
+        const revealEase = revealProgress * revealProgress * (3 - 2 * revealProgress);
+        productReveal.style.opacity = revealEase.toFixed(3);
+        productReveal.style.transform = `translate3d(0, ${(28 * (1 - revealEase)).toFixed(1)}px, 0)`;
+        productRevealRight.style.opacity = revealEase.toFixed(3);
+        productRevealRight.style.transform = `translate3d(0, ${(28 * (1 - revealEase)).toFixed(1)}px, 0)`;
+      };
+      const scheduleUpdate = () => {
+        if (!frameRequest) frameRequest = window.requestAnimationFrame(update);
+      };
+      const setActiveDirection = (direction) => {
+        if (activeDirection === direction) return;
+        activeDirection = direction;
+        for (const [name, clip] of Object.entries(clips)) {
+          const active = name === direction;
+          if (!active) clip.video.pause();
+          clip.video.classList.toggle('is-active', active);
+          clip.video.setAttribute('aria-hidden', String(!active));
+        }
+      };
+      const targetTimeFor = (direction, position) => {
+        const clip = clips[direction];
+        const timeProgress = direction === 'down' ? position : 1 - position;
+        return clamp(timeProgress * Math.max(0, clip.duration - .001), 0, Math.max(0, clip.duration - .001));
+      };
+      const playClip = (direction) => {
+        const clip = clips[direction];
+        if (!sectionIsVisible || reducedMotion.matches || !clip.ready || clip.video.ended || !clip.video.paused) return;
+        clip.video.playbackRate = 1;
+        clip.video.play().then(() => {
+          mediaStatus.classList.add('visually-hidden');
+        }).catch((error) => {
+          mediaStatus.classList.remove('visually-hidden');
+          mediaStatus.textContent = `The ${direction} campaign clip could not play: ${error.message}`;
+        });
+      };
+      const switchDirection = (direction) => {
+        if (reducedMotion.matches) return;
+        hasScrollIntent = true;
+        candidateDirection = direction;
+        requestedDirection = direction;
+        const clip = clips[direction];
+        if (!sectionIsVisible || !clip.ready || !clip.duration) return;
+
+        if (direction === activeDirection && activatedDirection === direction) {
+          pendingDirection = '';
+          switchToken++;
+          if (!clip.video.ended) playClip(direction);
+          return;
+        }
+        if (pendingDirection === direction) return;
+
+        pendingDirection = direction;
+        const token = ++switchToken;
+        if (direction !== activeDirection) clips[activeDirection].video.pause();
+        const video = clip.video;
+        const alignmentTime = targetTimeFor(direction, targetProgress);
+        let didSeek = false;
+
+        const finishSwitch = () => {
+          if (token !== switchToken || requestedDirection !== direction || !sectionIsVisible) return;
+          pendingDirection = '';
+          setActiveDirection(direction);
+          activatedDirection = direction;
+          playClip(direction);
+        };
+        const alignAndSwitch = () => {
+          if (token !== switchToken || requestedDirection !== direction || !sectionIsVisible) return;
+          if (video.seeking) {
+            video.addEventListener('seeked', alignAndSwitch, { once: true });
+            return;
+          }
+          if (!didSeek && Math.abs(video.currentTime - alignmentTime) > 1 / 30) {
+            didSeek = true;
+            video.addEventListener('seeked', alignAndSwitch, { once: true });
+            try {
+              video.currentTime = alignmentTime;
+            } catch (error) {
+              pendingDirection = '';
+              mediaStatus.classList.remove('visually-hidden');
+              mediaStatus.textContent = `Unable to align the ${direction} clip: ${error.message}`;
+            }
+            return;
+          }
+          finishSwitch();
+        };
+
+        if (video.readyState < 2) {
+          video.addEventListener('canplay', alignAndSwitch, { once: true });
+        } else {
+          alignAndSwitch();
+        }
+      };
+      const syncVideo = () => {
+        // Scroll controls the exact frame; the clip never free-runs on its own.
+        clips.down.video.pause();
+      };
+      const seekToDesiredTime = () => {
+        const clip = clips.down;
+        if (!clip.ready || !clip.duration || clip.video.seeking) return;
+        if (Math.abs(clip.video.currentTime - desiredVideoTime) <= .01) return;
+        try {
+          // Exact seeking avoids keyframe jumps that are especially noticeable while scrolling up.
+          clip.video.currentTime = desiredVideoTime;
+        } catch (error) {
+          mediaStatus.classList.remove('visually-hidden');
+          mediaStatus.textContent = `Unable to update the campaign frame: ${error.message}`;
+        }
+      };
+      const update = () => {
+        frameRequest = 0;
+        if (reducedMotion.matches) {
+          progress = 0;
+          targetProgress = 0;
+          requestedDirection = 'down';
+          candidateDirection = 'down';
+          pendingDirection = '';
+          activatedDirection = '';
+          hasScrollIntent = false;
+          switchToken++;
+          setActiveDirection('down');
+          for (const property of ['width', 'height', 'aspect-ratio', 'top']) frame.style.removeProperty(property);
+          caption.style.removeProperty('opacity');
+          progressBar.style.removeProperty('transform');
+          productReveal.style.removeProperty('opacity');
+          productReveal.style.removeProperty('transform');
+          productRevealRight.style.removeProperty('opacity');
+          productRevealRight.style.removeProperty('transform');
+          syncVideo();
+          return;
+        }
+
+        targetProgress = clamp((window.scrollY - sectionTop) / sectionTravel, 0, 1);
+        progress = targetProgress;
+        updateFrame(progress);
+        const clip = clips.down;
+        if (clip.ready && clip.duration) {
+          desiredVideoTime = targetTimeFor('down', progress);
+          seekToDesiredTime();
+        }
+        syncVideo();
+      };
+      const queueDirection = (direction) => {
+        hasScrollIntent = true;
+        if (direction === requestedDirection) {
+          candidateDirection = direction;
+          window.clearTimeout(directionTimer);
+          directionTimer = 0;
+          if (sectionIsVisible) switchDirection(direction);
+          return;
+        }
+        if (candidateDirection === direction && directionTimer) return;
+        candidateDirection = direction;
+        window.clearTimeout(directionTimer);
+        directionTimer = window.setTimeout(() => {
+          directionTimer = 0;
+          if (candidateDirection === direction && sectionIsVisible) switchDirection(direction);
+        }, 120);
+      };
+      const onScroll = () => {
+        const nextProgress = clamp((window.scrollY - sectionTop) / sectionTravel, 0, 1);
+        if (nextProgress !== targetProgress) lastScrollDirection = nextProgress > targetProgress ? 1 : -1;
+        if (isAutoCompleting && lastScrollDirection < 0) isAutoCompleting = false;
+        targetProgress = nextProgress;
+        window.clearTimeout(settleTimer);
+        if (!reducedMotion.matches && !isAutoCompleting && lastScrollDirection > 0 && targetProgress > .4 && targetProgress < .995) {
+          settleTimer = window.setTimeout(() => {
+            const stoppedProgress = clamp((window.scrollY - sectionTop) / sectionTravel, 0, 1);
+            if (lastScrollDirection <= 0 || stoppedProgress <= .4 || stoppedProgress >= .995) return;
+            isAutoCompleting = true;
+            window.scrollTo({ top: sectionTop + sectionTravel, behavior: 'smooth' });
+            window.setTimeout(() => { isAutoCompleting = false; }, 1200);
+          }, 180);
+        }
+        scheduleUpdate();
+      };
+      const loadClip = (clip) => {
+        try {
+          // A direct relative URL works from both file:// and an ordinary web server.
+          clip.video.src = clip.video.dataset.src;
+          clip.video.load();
+        } catch (_) {
+          mediaStatus.classList.remove('visually-hidden');
+          mediaStatus.textContent = 'Campaign footage could not be opened.';
+        }
+      };
+
+      for (const [direction, clip] of Object.entries(clips)) {
+        clip.video.addEventListener('loadedmetadata', () => {
+          clip.duration = Number.isFinite(clip.video.duration) ? clip.video.duration : 0;
+          scheduleUpdate();
+        });
+        clip.video.addEventListener('canplay', () => {
+          clip.ready = clip.duration > 0;
+          if (clip.ready) {
+            mediaStatus.textContent = 'Campaign footage ready.';
+            if (hasScrollIntent && requestedDirection === direction && sectionIsVisible) switchDirection(direction);
+          }
+          scheduleUpdate();
+        });
+        clip.video.addEventListener('loadeddata', scheduleUpdate);
+        clip.video.addEventListener('seeked', () => {
+          seekToDesiredTime();
+          scheduleUpdate();
+        });
+        clip.video.addEventListener('error', () => {
+          mediaStatus.classList.remove('visually-hidden');
+          mediaStatus.textContent = `The ${direction} campaign clip could not load.`;
+        });
+        loadClip(clip);
+      }
+
+      measure();
+      window.addEventListener('scroll', onScroll, { passive: true });
+      const onResize = () => {
+        measure();
+        scheduleUpdate();
+      };
+      const onReducedMotionChange = () => {
+        measure();
+        scheduleUpdate();
+      };
+      window.addEventListener('resize', onResize, { passive: true });
+      if (typeof reducedMotion.addEventListener === 'function') {
+        reducedMotion.addEventListener('change', onReducedMotionChange);
+      } else {
+        reducedMotion.addListener?.(onReducedMotionChange);
+      }
+      const sectionObserver = 'IntersectionObserver' in window
+        ? new IntersectionObserver((entries) => {
+          const visible = entries.some((entry) => entry.isIntersecting && entry.intersectionRatio > .05);
+          if (visible === sectionIsVisible) return;
+          sectionIsVisible = visible;
+          if (!visible) {
+            window.clearTimeout(directionTimer);
+            directionTimer = 0;
+            pendingDirection = '';
+            switchToken++;
+            clips[activeDirection].video.pause();
+            return;
+          }
+          if (hasScrollIntent) switchDirection(requestedDirection);
+        }, { threshold: .05 })
+        : null;
+      sectionObserver?.observe(document.querySelector('.stage'));
+      const editionObserver = 'IntersectionObserver' in window
+        ? new IntersectionObserver((entries, observer) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        }, { threshold: .16 })
+        : null;
+      document.querySelectorAll('.edition-card').forEach((card) => {
+        if (editionObserver) editionObserver.observe(card);
+        else card.classList.add('is-visible');
+      });
+      window.addEventListener('pagehide', () => {
+        window.removeEventListener('scroll', onScroll);
+        window.removeEventListener('resize', onResize);
+        window.clearTimeout(directionTimer);
+        window.clearTimeout(settleTimer);
+        if (frameRequest) window.cancelAnimationFrame(frameRequest);
+        sectionObserver?.disconnect();
+        editionObserver?.disconnect();
+        for (const clip of Object.values(clips)) {
+          clip.video.pause();
+          if (clip.objectUrl) URL.revokeObjectURL(clip.objectUrl);
+        }
+        if (typeof reducedMotion.removeEventListener === 'function') {
+          reducedMotion.removeEventListener('change', onReducedMotionChange);
+        } else {
+          reducedMotion.removeListener?.(onReducedMotionChange);
+        }
+      }, { once: true });
+      scheduleUpdate();
+    })();
+  </script>
+</body>
+</html>
