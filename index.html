@@ -311,9 +311,17 @@
     .story-side { padding-top: 10px; }
     .eyebrow { font: 10px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--blue); }
     .story-number { margin-top: 54px; color: var(--silver); font: 13px var(--mono); }
-    .story-product { width: min(100%, 285px); margin: clamp(38px, 6vw, 88px) 0 0; }
+    .story-product { width: min(100%, 360px); margin: clamp(38px, 6vw, 88px) 0 0; transition: opacity .8s cubic-bezier(.2,.75,.25,1), transform .8s cubic-bezier(.2,.75,.25,1); }
     .story-product img { display: block; width: 100%; height: auto; border: 1px solid rgba(17, 19, 18, .1); box-shadow: 0 16px 40px rgba(19, 25, 22, .09); }
     .story-product figcaption { margin-top: 10px; color: var(--muted); font: 8px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+    .story-copy > * { transition: opacity .72s cubic-bezier(.2,.75,.25,1), transform .72s cubic-bezier(.2,.75,.25,1); }
+    .js .story-product, .js .story-copy > * { opacity: 0; transform: translate3d(0, 30px, 0); }
+    .js .story-product { transform: translate3d(0, 36px, 0) scale(.96); }
+    .js .story.is-visible .story-product, .js .story.is-visible .story-copy > * { opacity: 1; transform: translate3d(0, 0, 0); }
+    .story-copy h2 { transition-delay: .1s; }
+    .story-copy .story-description { transition-delay: .2s; }
+    .story-copy .spec-list { transition-delay: .3s; }
+    .story-copy .explore-link { transition-delay: .4s; }
     .story-copy h2 { margin: 0 0 30px; max-width: 680px; font-size: clamp(48px, 7.3vw, 106px); line-height: .9; letter-spacing: -.07em; font-weight: 600; }
     .story-copy h2 em { font-family: var(--serif); font-weight: 600; }
     .story-description { max-width: 430px; margin: 0; font-size: 15px; line-height: 1.8; color: #535a56; }
@@ -388,7 +396,7 @@
       .stage-rule { left: 6vw; right: 6vw; bottom: 5%; }
       .story { padding: 100px 8vw 110px; grid-template-columns: 1fr; gap: 44px; }
       .story-number { margin-top: 20px; }
-      .story-product { width: min(62vw, 260px); margin-top: 28px; }
+      .story-product { width: min(76vw, 320px); margin-top: 28px; }
       .story-copy h2 { font-size: clamp(54px, 14vw, 86px); }
       .story-description { font-size: 14px; }
       .spec-list { gap: 12px; margin: 42px 0; }
@@ -419,6 +427,7 @@
       .campaign-progress { display: none; }
       .product-reveal { display: none; }
       .js .edition-card { opacity: 1; transform: none; }
+      .js .story-product, .js .story-copy > * { opacity: 1; transform: none; }
     }
     @media (prefers-contrast: more) {
       .site-header, .stage-rule { border-color: currentColor; background: currentColor; }
@@ -684,7 +693,7 @@
       const seekToDesiredTime = () => {
         const clip = clips.down;
         if (!clip.ready || !clip.duration || clip.video.seeking) return;
-        if (Math.abs(clip.video.currentTime - desiredVideoTime) <= .01) return;
+        if (Math.abs(clip.video.currentTime - desiredVideoTime) <= .006) return;
         try {
           // Exact seeking avoids keyframe jumps that are especially noticeable while scrolling up.
           clip.video.currentTime = desiredVideoTime;
@@ -717,7 +726,13 @@
         }
 
         targetProgress = clamp((window.scrollY - sectionTop) / sectionTravel, 0, 1);
-        progress = targetProgress;
+        // Let the timeline ease toward the scroll position instead of jumping
+        // between seek targets. This is especially noticeable when reversing.
+        const now = performance.now();
+        const elapsed = lastFrameTime ? Math.min(now - lastFrameTime, 48) : 16.67;
+        lastFrameTime = now;
+        progress += (targetProgress - progress) * (1 - Math.exp(-elapsed / 92));
+        if (Math.abs(targetProgress - progress) < .0003) progress = targetProgress;
         updateFrame(progress);
         const clip = clips.down;
         if (clip.ready && clip.duration) {
@@ -725,6 +740,7 @@
           seekToDesiredTime();
         }
         syncVideo();
+        if (progress !== targetProgress) scheduleUpdate();
       };
       const queueDirection = (direction) => {
         hasScrollIntent = true;
@@ -829,6 +845,16 @@
         }, { threshold: .05 })
         : null;
       sectionObserver?.observe(document.querySelector('.stage'));
+      const story = document.querySelector('.story');
+      const storyObserver = 'IntersectionObserver' in window
+        ? new IntersectionObserver((entries, observer) => {
+          if (!entries.some((entry) => entry.isIntersecting)) return;
+          story.classList.add('is-visible');
+          observer.unobserve(story);
+        }, { threshold: .18 })
+        : null;
+      if (storyObserver) storyObserver.observe(story);
+      else story.classList.add('is-visible');
       const editionObserver = 'IntersectionObserver' in window
         ? new IntersectionObserver((entries, observer) => {
           for (const entry of entries) {
@@ -849,6 +875,7 @@
         window.clearTimeout(settleTimer);
         if (frameRequest) window.cancelAnimationFrame(frameRequest);
         sectionObserver?.disconnect();
+        storyObserver?.disconnect();
         editionObserver?.disconnect();
         for (const clip of Object.values(clips)) {
           clip.video.pause();
